@@ -13,5 +13,6 @@ urlpatterns = [
          views.SessionDetailAPIView.as_view(), name="session-detail"),
     path("api/register/", views.RegisterAPIView.as_view(), name="api-register"),
     path("api/token/", TokenObtainPairView.as_view(), name="token-obtain"),
-    path("api/token/refresh", TokenRefreshView.as_view(), name="token-refresh")
+    path("api/token/refresh", TokenRefreshView.as_view(), name="token-refresh"),
+    path("", views.HomeView.as_view(), name="home-view")
 ]

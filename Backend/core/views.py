@@ -5,6 +5,7 @@ from .models import Skill, StudySession, User, UserProfile
 from .serializers import SkillSerializer, StudySessionSerializer, UserSerializer, UserProfileSerializer, RegisterSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from django.views import View
 # Create your views here.
 
 
@@ -98,3 +99,7 @@ class RegisterAPIView(views.APIView):
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class HomeView(View):
+    def get(self, request):
+        return render(request, "core/session_list.html")
