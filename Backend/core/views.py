@@ -2,28 +2,33 @@ from django.shortcuts import render
 from rest_framework import views, status
 from rest_framework.response import Response
 from .models import Skill, StudySession, User, UserProfile
-from .serializers import SkillSerializer, StudySessionSerializer, UserSerializer, UserProfileSerializer
+from .serializers import SkillSerializer, StudySessionSerializer, UserSerializer, UserProfileSerializer, RegisterSerializer
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 
 class SkillListCreateAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        queryset = Skill.objects.all()
+        queryset = Skill.objects.filter(user=request.user)
         serializer = SkillSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = SkillSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SkillDetailAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
     def get_skill(self, pk):
-        return get_object_or_404(Skill, pk=pk)
+        return get_object_or_404(Skill, pk=pk, user=self.request.user)
 
     def get(self, request, pk):
         skill = self.get_skill(pk)
@@ -45,23 +50,26 @@ class SkillDetailAPIView(views.APIView):
 
 
 class SessionListCreateAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        queryset = StudySession.objects.all()
+        queryset = StudySession.objects.filter(user=request.user)
         serializer = StudySessionSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         serializer = StudySessionSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SessionDetailAPIView(views.APIView):
+    permission_classes = [IsAuthenticated]
 
     def get_session(self, pk):
-        return get_object_or_404(StudySession, pk=pk)
+        return get_object_or_404(StudySession, pk=pk, user=self.request.user)
 
     def get(self, request, pk):
         session = self.get_session(pk)
@@ -80,3 +88,13 @@ class SessionDetailAPIView(views.APIView):
         session = self.get_session(pk)
         session.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RegisterAPIView(views.APIView):
+
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

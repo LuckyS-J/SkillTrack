@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
 class Address(models.Model):
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -14,6 +15,8 @@ class Address(models.Model):
 
 
 class Skill(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="skills", null=True)
     name = models.CharField(max_length=50)
     description = models.TextField()
     category = models.CharField(max_length=50, null=True)
