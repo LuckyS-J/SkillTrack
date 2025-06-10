@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from rest_framework import views, status
 from rest_framework.response import Response
 from .models import Skill, StudySession, User, UserProfile
@@ -10,6 +10,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from .forms import StudySessionForm, SkillForm
 # Create your views here.
 
 
@@ -147,3 +148,33 @@ class ProfileView(View):
                 "user":request.user,
                 "user_profile":user_profile
             })
+
+class AddStudySessionView(View):
+    def get(self, request):
+        form = StudySessionForm()
+        return render (request, "core/session_add.html", {"form":form})
+
+    def post(self, request):
+        form = StudySessionForm(request.POST)
+        if form.is_valid():
+            session = form.save(commit=False)
+            session.user = request.user
+            session.save()
+            return redirect("home")
+        else:
+            return render (request, "core/session_add.html", {"form":form})
+        
+class AddSkillForm(View):
+    def get(self, request):
+        form = SkillForm()
+        return render (request, "core/skill_add.html", {"form":form})
+
+    def post(self, request):
+        form = SkillForm(request.POST)
+        if form.is_valid():
+            session = form.save(commit=False)
+            session.user = request.user
+            session.save()
+            return redirect("home")
+        else:
+            return render (request, "core/skill_add.html", {"form":form})
