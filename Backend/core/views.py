@@ -109,7 +109,19 @@ class RegisterAPIView(views.APIView):
 # WEB SITES
 class HomeView(View):
     def get(self, request):
-        return render(request, "core/session_list.html")
+        if not request.user.is_authenticated:
+            return render(request, "core/session_list.html", context= {
+                "logged":False,
+            })
+        else:
+            sessions = StudySession.objects.filter(user=request.user)
+            count = sessions.count()
+            return render(request, "core/session_list.html", context= {
+                "logged":True,
+                "sessions":sessions,
+                "count":count,
+                "user":request.user
+            })
     
 class RegisterView(CreateView):
     form_class = UserCreationForm
@@ -121,3 +133,17 @@ class CustomLoginView(LoginView):
     template_name = "core/login.html"
     redirect_authenticated_user = True
     success_url = reverse_lazy("home")
+
+class ProfileView(View):
+    def get(self, request, user_id):
+        if not request.user.is_authenticated:
+            return render(request, "core/profile.html", context= {
+                "logged":False,
+            })
+        else:
+            user_profile = get_object_or_404(UserProfile, user__id=user_id)
+            return render(request, "core/profile.html", context= {
+                "logged":True,
+                "user":request.user,
+                "user_profile":user_profile
+            })

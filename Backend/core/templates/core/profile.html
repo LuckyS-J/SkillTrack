@@ -1,0 +1,16 @@
+{% extends './base.html' %}
+
+{% block content %}
+
+<!-- Not logged -->
+{% if not logged %}
+  <h2>Please login to continue</h2>
+
+<!-- Logged -->
+{% else %}
+  <h2>Username: {{user.username}}</h2>
+  <h2>Bio: {{user_profile.bio}}</h2>
+  <h2>With us since: {{user_profile.created_at|date:"Y-m-d"}}</h2>
+{% endif %}
+
+{% endblock %}
