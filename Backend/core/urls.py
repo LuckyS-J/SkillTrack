@@ -1,8 +1,10 @@
 from django.urls import path
 from . import views
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
+#   APIS
     path("api/skills", views.SkillListCreateAPIView.as_view(),
          name="skill-list-create"),
     path("api/skills/<int:pk>",
@@ -14,5 +16,10 @@ urlpatterns = [
     path("api/register/", views.RegisterAPIView.as_view(), name="api-register"),
     path("api/token/", TokenObtainPairView.as_view(), name="token-obtain"),
     path("api/token/refresh", TokenRefreshView.as_view(), name="token-refresh"),
-    path("", views.HomeView.as_view(), name="home-view")
+
+#   WEB LINKS  
+    path("", views.HomeView.as_view(), name="home"),
+    path("accounts/register/", views.RegisterView.as_view(), name="register"),
+    path("accounts/login/", views.CustomLoginView.as_view(), name="login"),
+    path("accounts/logout/", LogoutView.as_view(next_page="login"), name="logout"),
 ]

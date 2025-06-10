@@ -6,9 +6,14 @@ from .serializers import SkillSerializer, StudySessionSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from django.views import View
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.views import LoginView
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
 # Create your views here.
 
 
+# APIS
 class SkillListCreateAPIView(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -100,6 +105,19 @@ class RegisterAPIView(views.APIView):
             return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+# WEB SITES
 class HomeView(View):
     def get(self, request):
         return render(request, "core/session_list.html")
+    
+class RegisterView(CreateView):
+    form_class = UserCreationForm
+    success_url = reverse_lazy("login")
+    template_name = "core/register.html"
+
+class CustomLoginView(LoginView):
+    form_class = AuthenticationForm
+    template_name = "core/login.html"
+    redirect_authenticated_user = True
+    success_url = reverse_lazy("home")

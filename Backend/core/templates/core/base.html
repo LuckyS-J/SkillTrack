@@ -10,6 +10,7 @@
 </head>
 
 <body>
+  {% load static %}
 
   <!-- Navbar -->
   <header class="p-3 mb-3 border-bottom">
@@ -35,7 +36,10 @@
             <li>
               <hr class="dropdown-divider">
             </li>
-            <li><a class="dropdown-item" href="#">Sign out</a></li>
+            <form action="{% url 'logout' %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="dropdown-item">Logout</button>
+            </form>
           </ul>
         </div>
       </div>
