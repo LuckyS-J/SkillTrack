@@ -212,19 +212,23 @@ class DashboardView(View):
         else:
             return render(request, "core/dashboard.html", {"is_session": False})
 
+
 class EditStudySessionView(View):
     def get(self, request, pk):
         session = get_object_or_404(StudySession, pk=pk, user=request.user)
         form = StudySessionForm(instance=session, user=request.user)
-        return render(request, "core/session_edit.html", {"form":form, "session":session})
+        return render(request, "core/session_edit.html", {"form": form, "session": session})
+
     def post(self, request, pk):
         session = get_object_or_404(StudySession, pk=pk, user=request.user)
-        form = StudySessionForm(request.POST, instance=session, user=request.user)
+        form = StudySessionForm(
+            request.POST, instance=session, user=request.user)
         if form.is_valid():
             form.save()
             return redirect("home")
-        return render(request, "core/session_edit.html", {"form":form, "session":session})
-    
+        return render(request, "core/session_edit.html", {"form": form, "session": session})
+
+
 class AllSkillsView(View):
     def get(self, request):
         if not request.user.is_authenticated:
@@ -241,16 +245,32 @@ class AllSkillsView(View):
                 "count": count,
                 "user": request.user
             })
-        
+
+
 class EditSkillView(View):
     def get(self, request, pk):
         skill = get_object_or_404(Skill, pk=pk, user=request.user)
         form = SkillForm(instance=skill)
-        return render(request, "core/skill_edit.html", {"form":form, "session":skill})
+        return render(request, "core/skill_edit.html", {"form": form, "session": skill})
+
     def post(self, request, pk):
         skill = get_object_or_404(Skill, pk=pk, user=request.user)
         form = SkillForm(request.POST, instance=skill)
         if form.is_valid():
             form.save()
             return redirect("home")
-        return render(request, "core/skill_edit.html", {"form":form, "session":skill})
+        return render(request, "core/skill_edit.html", {"form": form, "session": skill})
+
+
+class DeleteStudySessionView(View):
+    def post(self, request, pk):
+        session = get_object_or_404(StudySession, pk=pk, user=request.user)
+        session.delete()
+        return redirect("home")
+
+
+class DeleteSkillView(View):
+    def post(self, request, pk):
+        skill = get_object_or_404(Skill, pk=pk, user=request.user)
+        skill.delete()
+        return redirect("home")
