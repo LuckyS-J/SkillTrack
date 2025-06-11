@@ -12,6 +12,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import StudySessionForm, SkillForm
 from django.db.models import Avg, Sum, Count
+from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
 
 
@@ -139,7 +140,11 @@ class CustomLoginView(LoginView):
     success_url = reverse_lazy("home")
 
 
-class ProfileView(View):
+class ProfileView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def get(self, request, user_id):
         if not request.user.is_authenticated:
             return render(request, "core/profile.html", context={
@@ -154,7 +159,11 @@ class ProfileView(View):
             })
 
 
-class AddStudySessionView(View):
+class AddStudySessionView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def get(self, request):
         form = StudySessionForm(user=request.user)
         return render(request, "core/session_add.html", {"form": form})
@@ -170,7 +179,11 @@ class AddStudySessionView(View):
             return render(request, "core/session_add.html", {"form": form})
 
 
-class AddSkillView(View):
+class AddSkillView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def get(self, request):
         form = SkillForm()
         return render(request, "core/skill_add.html", {"form": form})
@@ -186,7 +199,11 @@ class AddSkillView(View):
             return render(request, "core/skill_add.html", {"form": form})
 
 
-class DashboardView(View):
+class DashboardView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def get(self, request):
         sessions = StudySession.objects.filter(user=request.user)
         if sessions.exists():
@@ -213,7 +230,11 @@ class DashboardView(View):
             return render(request, "core/dashboard.html", {"is_session": False})
 
 
-class EditStudySessionView(View):
+class EditStudySessionView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def get(self, request, pk):
         session = get_object_or_404(StudySession, pk=pk, user=request.user)
         form = StudySessionForm(instance=session, user=request.user)
@@ -229,7 +250,11 @@ class EditStudySessionView(View):
         return render(request, "core/session_edit.html", {"form": form, "session": session})
 
 
-class AllSkillsView(View):
+class AllSkillsView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def get(self, request):
         if not request.user.is_authenticated:
             return render(request, "core/skill_list.html", context={
@@ -247,7 +272,11 @@ class AllSkillsView(View):
             })
 
 
-class EditSkillView(View):
+class EditSkillView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def get(self, request, pk):
         skill = get_object_or_404(Skill, pk=pk, user=request.user)
         form = SkillForm(instance=skill)
@@ -262,14 +291,22 @@ class EditSkillView(View):
         return render(request, "core/skill_edit.html", {"form": form, "session": skill})
 
 
-class DeleteStudySessionView(View):
+class DeleteStudySessionView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def post(self, request, pk):
         session = get_object_or_404(StudySession, pk=pk, user=request.user)
         session.delete()
         return redirect("home")
 
 
-class DeleteSkillView(View):
+class DeleteSkillView(LoginRequiredMixin, View):
+
+    login_url = '/accounts/login/'
+    redirect_field_name = 'next'
+
     def post(self, request, pk):
         skill = get_object_or_404(Skill, pk=pk, user=request.user)
         skill.delete()

@@ -2,49 +2,88 @@
 <html lang="en">
 
 <head>
+  {% load static %}
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
 </head>
 
 <body>
-  {% load static %}
 
-  <!-- Navbar -->
   <header class="p-3 mb-3 border-bottom">
     <div class="container">
-      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"> <a href="/"
-          class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none"> <svg class="bi me-2"
-            width="40" height="32" role="img" aria-label="Bootstrap">
-            <use xlink:href="#bootstrap"></use>
-          </svg> </a>
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="#" class="nav-link px-2 link-secondary">Home</a></li>
-          <li><a href="#" class="nav-link px-2 link-body-emphasis">Sessions</a></li>
-          <li><a href="#" class="nav-link px-2 link-body-emphasis">About author</a></li>
+      <div class="d-flex flex-wrap align-items-center justify-content-between">
+
+        <!-- Logo / Home link -->
+        <a href="{% url 'home' %}" class="text-decoration-none me-4">
+          <span class="fs-3 fw-semibold text-white px-3 py-2 rounded-3 d-inline-flex align-items-center app-logo">
+            <i class="bi bi-journal-text me-2"></i> SkillTrack
+          </span>
+        </a>
+
+        <!-- Menu -->
+        <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0 gap-2">
+          <li>
+            <a href="{% url 'home' %}" class="btn btn-outline-primary {% if request.path == '/' %}active{% endif %}">
+              Home
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'skills' %}"
+              class="btn btn-outline-success {% if 'skills' in request.path and not 'add' in request.path %}active{% endif %}">
+              Skills
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'dashboard' %}"
+              class="btn btn-outline-warning {% if 'dashboard' in request.path %}active{% endif %}">
+              📊 Dashboard
+            </a>
         </ul>
-        <div class="dropdown text-end"> <a href="#"
-            class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false"> <img src="" alt="mdo" width="32" height="32"
-              class="rounded-circle"> </a>
+
+
+
+        <!-- User dropdown -->
+        <div class="dropdown text-end">
+          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <img src="{% static 'images/default_avatar.png' %}" alt="{{ request.user.username }}" width="32" height="32"
+              class="rounded-circle">
+          </a>
           <ul class="dropdown-menu text-small">
-            <li><a class="dropdown-item" href="#">Sessions</a></li>
-            <li><a class="dropdown-item" href="#">Skills</a></li>
-            <li><a class="dropdown-item" href="#">Profile</a></li>
+            {% if request.user.is_authenticated %}
+            <li><a class="dropdown-item" href="{% url 'skills' %}"><i class="bi bi-lightbulb"></i> Skills</a></li>
+            <li><a class="dropdown-item" href="{% url 'add-skill' %}"><i class="bi bi-plus-circle"></i> Add Skill</a>
+            </li>
+            <li><a class="dropdown-item" href="{% url 'add-session' %}"><i class="bi bi-calendar-plus"></i> Add
+                Session</a></li>
+            <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-bar-chart"></i> Dashboard</a></li>
+            <li><a class="dropdown-item" href="{% url 'profile' request.user.id %}"><i class="bi bi-person-circle"></i>
+                Profile</a></li>
             <li>
               <hr class="dropdown-divider">
             </li>
-            <form action="{% url 'logout' %}" method="post">
-              {% csrf_token %}
-              <button type="submit" class="dropdown-item">Logout</button>
-            </form>
+            <li>
+              <form action="{% url 'logout' %}" method="post" class="m-0 p-0">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Logout</button>
+              </form>
+            </li>
+            {% else %}
+            <li><a class="dropdown-item" href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+            </li>
+            {% endif %}
           </ul>
         </div>
+
       </div>
     </div>
   </header>
+
 
   {% block content %}{% endblock %}
 

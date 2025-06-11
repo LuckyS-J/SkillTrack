@@ -35,6 +35,4 @@ urlpatterns = [
          views.DeleteStudySessionView.as_view(), name="delete-session"),
     path("skills/<int:pk>/delete/",
          views.DeleteSkillView.as_view(), name="delete-skill"),
-
-
 ]
