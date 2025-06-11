@@ -11,6 +11,7 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .forms import StudySessionForm, SkillForm
+from django.db.models import Avg, Sum, Count
 # Create your views here.
 
 
@@ -111,23 +112,25 @@ class RegisterAPIView(views.APIView):
 class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return render(request, "core/session_list.html", context= {
-                "logged":False,
+            return render(request, "core/session_list.html", context={
+                "logged": False,
             })
         else:
             sessions = StudySession.objects.filter(user=request.user)
             count = sessions.count()
-            return render(request, "core/session_list.html", context= {
-                "logged":True,
-                "sessions":sessions,
-                "count":count,
-                "user":request.user
+            return render(request, "core/session_list.html", context={
+                "logged": True,
+                "sessions": sessions,
+                "count": count,
+                "user": request.user
             })
-    
+
+
 class RegisterView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy("login")
     template_name = "core/register.html"
+
 
 class CustomLoginView(LoginView):
     form_class = AuthenticationForm
@@ -135,24 +138,26 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
     success_url = reverse_lazy("home")
 
+
 class ProfileView(View):
     def get(self, request, user_id):
         if not request.user.is_authenticated:
-            return render(request, "core/profile.html", context= {
-                "logged":False,
+            return render(request, "core/profile.html", context={
+                "logged": False,
             })
         else:
             user_profile = get_object_or_404(UserProfile, user__id=user_id)
-            return render(request, "core/profile.html", context= {
-                "logged":True,
-                "user":request.user,
-                "user_profile":user_profile
+            return render(request, "core/profile.html", context={
+                "logged": True,
+                "user": request.user,
+                "user_profile": user_profile
             })
+
 
 class AddStudySessionView(View):
     def get(self, request):
         form = StudySessionForm()
-        return render (request, "core/session_add.html", {"form":form})
+        return render(request, "core/session_add.html", {"form": form})
 
     def post(self, request):
         form = StudySessionForm(request.POST)
@@ -162,12 +167,13 @@ class AddStudySessionView(View):
             session.save()
             return redirect("home")
         else:
-            return render (request, "core/session_add.html", {"form":form})
-        
-class AddSkillForm(View):
+            return render(request, "core/session_add.html", {"form": form})
+
+
+class AddSkillView(View):
     def get(self, request):
         form = SkillForm()
-        return render (request, "core/skill_add.html", {"form":form})
+        return render(request, "core/skill_add.html", {"form": form})
 
     def post(self, request):
         form = SkillForm(request.POST)
@@ -177,4 +183,31 @@ class AddSkillForm(View):
             session.save()
             return redirect("home")
         else:
-            return render (request, "core/skill_add.html", {"form":form})
+            return render(request, "core/skill_add.html", {"form": form})
+
+
+class DashboardView(View):
+    def get(self, request):
+        sessions = StudySession.objects.filter(user=request.user)
+        if sessions.exists():
+            total_sessions = sessions.count()
+            total_duration = sessions.aggregate(
+                Sum("duration"))["duration__sum"]
+            average_duration = sessions.aggregate(
+                Avg("duration"))["duration__avg"]
+            top_categories = (StudySession.objects.filter(user=request.user).values(
+                'skill__category').annotate(total=Count('id')).order_by('-total')[:3])
+            last_session = (StudySession.objects.filter(
+                user=request.user).order_by('-date')).first()
+
+            return render(request, "core/dashboard.html", context={
+                "is_session": True,
+                "total_sessions": total_sessions,
+                "total_hours": total_duration,
+                "average_session_duration": average_duration,
+                "top_categories": top_categories,
+                "last_session": last_session,
+            })
+
+        else:
+            return render(request, "core/dashboard.html", {"is_session": False})

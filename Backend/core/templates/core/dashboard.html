@@ -1,0 +1,23 @@
+{% extends './base.html' %}
+
+{% block content %}
+
+{% if not is_session %}
+  <h1>Please add session to see statistics!</h1>
+  {% else %}
+  <h2>Total sessions: {{total_sessions}}</h2>
+  <h2>Total hours: {{total_hours}}</h2>
+  <h2>Average session_duration: {{average_session_duration}}</h2>
+  <h2>Top 3 Categories</h2>
+  <ul>
+    {% for cat in top_categories %}
+    <li>{{ cat.skill__category }} ({{ cat.total }} sessions)</li>
+    {% empty %}
+    <li>No data</li>
+    {% endfor %}
+  </ul>
+  <h2>Last session: {{last_session}}</h2>
+
+{% endif %}
+
+{% endblock %}

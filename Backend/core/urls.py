@@ -24,5 +24,6 @@ urlpatterns = [
     path("accounts/logout/", LogoutView.as_view(next_page="login"), name="logout"),
     path("accounts/user-profile/<int:user_id>/", views.ProfileView.as_view(), name="profile"),
     path("sessions/add/", views.AddStudySessionView.as_view(), name="add-session"),
-    path("skills/add/", views.AddSkillForm.as_view(), name="add-skill"),
+    path("skills/add/", views.AddSkillView.as_view(), name="add-skill"),
+    path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
 ]
