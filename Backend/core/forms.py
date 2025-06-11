@@ -4,6 +4,13 @@ from datetime import timedelta
 
 class StudySessionForm(forms.ModelForm):
 
+  def __init__(self, *args, **kwargs):
+    user = kwargs.pop("user", None)
+    super().__init__(*args, **kwargs)
+
+    if user is not None:
+      self.fields["skill"].queryset = Skill.objects.filter(user=user)
+
   DURATION_CHOICES = [
     (timedelta(minutes=15), "15 minutes"),
     (timedelta(minutes=30), "30 minutes"),

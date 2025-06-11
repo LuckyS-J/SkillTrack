@@ -26,4 +26,8 @@ urlpatterns = [
     path("sessions/add/", views.AddStudySessionView.as_view(), name="add-session"),
     path("skills/add/", views.AddSkillView.as_view(), name="add-skill"),
     path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
+    path("sessions/<int:pk>/edit/", views.EditStudySessionView.as_view(), name="edit-session"),
+    path("skills/", views.AllSkillsView.as_view(), name="skills"),
+    path("skills/<int:pk>/edit/", views.EditSkillView.as_view(), name="edit-skill"),
+
 ]

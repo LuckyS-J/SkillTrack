@@ -11,15 +11,15 @@
 {% else %}
   <h1>Hello {{ user.username }}!</h1>
   <br>
-  <h2>Total sessions: {{count}}</h2>
+  <h2>Total skills: {{count}}</h2>
   <br>
 
-  {% for session in sessions %}
-    <h3>Session id: {{session.id}}</h3>
-    <h4>Date: {{session.date}}</h4>
-    <h4>Duration: {{session.duration}}</h4>
-    <h4>Notes: {{session.notes}}</h4>
-    <a href="{% url 'edit-session' session.id %}">Edit session</a>
+  {% for skill in skills %}
+    <h3>Skill id: {{skill.id}}</h3>
+    <h4>name: {{skill.name}}</h4>
+    <h4>Duration: {{skill.category}}</h4>
+    <h4>Notes: {{skill.description}}</h4>
+    <a href="{% url 'edit-skill' skill.id %}">Edit skill</a>
     <br>
 
   {% endfor %}
