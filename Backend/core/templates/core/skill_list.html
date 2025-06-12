@@ -9,7 +9,14 @@
     <a href="{% url 'login' %}" class="btn btn-primary mt-3">Login</a>
   </div>
   {% else %}
-  <h2 class="text-light mb-4">🎯 Hello {{ user.username }} — you have {{ count }} skill{{ count|pluralize }}!</h2>
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h2 class="text-light mb-0">
+      🎯 Hello {{ user.username }} — you have {{ count }} skill{{ count|pluralize }}!
+    </h2>
+    <a href="{% url 'add-skill' %}" class="btn btn-outline-success">
+      ➕ Add Skill
+    </a>
+  </div>
 
   <div class="row g-4">
     {% for skill in skills %}

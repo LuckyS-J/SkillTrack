@@ -28,6 +28,10 @@ class Skill(models.Model):
 
 
 class UserProfile(models.Model):
+
+    def user_directory_path(instance, filename):
+        return f'profile_pics/user_{instance.user.id}/{filename}'
+
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="profile")
     bio = models.TextField(blank=True, null=True)
@@ -36,6 +40,7 @@ class UserProfile(models.Model):
     skills = models.ManyToManyField(Skill, related_name="user_skills")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    profile_picture = models.ImageField(upload_to=user_directory_path, default='profile_pics/default.jpg', blank=True)
 
     def __str__(self):
         return f"Profile of {self.user.username}"

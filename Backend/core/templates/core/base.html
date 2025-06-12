@@ -3,6 +3,7 @@
 
 <head>
   {% load static %}
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{% endblock %}</title>
@@ -49,11 +50,14 @@
 
         <!-- User dropdown -->
         <div class="dropdown text-end">
-          <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
-            aria-expanded="false">
-            <img src="{% static 'images/default_avatar.png' %}" alt="{{ request.user.username }}" width="32" height="32"
-              class="rounded-circle">
-          </a>
+        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          {% if request.user.profile.profile_picture %}
+            <img src="{{ request.user.profile.profile_picture.url }}" alt="{{ request.user.username }}" width="48" height="48" class="rounded-circle">
+          {% else %}
+            <img src="{{ MEDIA_URL }}default_avatar.png" alt="{{ request.user.username }}" width="48" height="48" class="rounded-circle">
+          {% endif %}
+        </a>
           <ul class="dropdown-menu text-small">
             {% if request.user.is_authenticated %}
             <li><a class="dropdown-item" href="{% url 'skills' %}"><i class="bi bi-lightbulb"></i> Skills</a></li>
@@ -90,22 +94,16 @@
 
   <!-- Footer -->
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-    <div class="col-md-4 d-flex align-items-center"> <a href="/"
-        class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1" aria-label="Bootstrap"> <svg class="bi"
-          width="30" height="24" aria-hidden="true">
+    <div class="col-md-4 d-flex align-items-center">
+      <a href="/" class="mb-3 me-2 mb-md-0 text-light text-decoration-none lh-1" aria-label="Bootstrap">
+        <svg class="bi" width="30" height="24" aria-hidden="true">
           <use xlink:href="#bootstrap"></use>
-        </svg> </a> <span class="mb-3 mb-md-0 text-body-secondary">© 2025 Company, Inc</span> </div>
-    <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
-      <li class="ms-3"><a class="text-body-secondary" href="#" aria-label="Instagram"><svg class="bi" width="24"
-            height="24" aria-hidden="true">
-            <use xlink:href="#instagram"></use>
-          </svg></a></li>
-      <li class="ms-3"><a class="text-body-secondary" href="#" aria-label="Facebook"><svg class="bi" width="24"
-            height="24">
-            <use xlink:href="#facebook"></use>
-          </svg></a></li>
-    </ul>
+        </svg>
+      </a>
+      <span class="mb-3 mb-md-0 text-light">© 2025 SkillTrack</span>
+    </div>
   </footer>
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"

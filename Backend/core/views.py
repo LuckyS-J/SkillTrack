@@ -1,18 +1,17 @@
 from django.shortcuts import render, redirect
 from rest_framework import views, status
 from rest_framework.response import Response
-from .models import Skill, StudySession, User, UserProfile
-from .serializers import SkillSerializer, StudySessionSerializer, UserSerializer, UserProfileSerializer, RegisterSerializer
+from .models import Skill, StudySession, UserProfile
+from .serializers import SkillSerializer, StudySessionSerializer, RegisterSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from django.views import View
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from .forms import StudySessionForm, SkillForm, CustomAuthenticationForm, CustomUserCreationForm
+from .forms import StudySessionForm, SkillForm, CustomAuthenticationForm, CustomUserCreationForm, UserProfileForm
 from django.db.models import Avg, Sum, Count
 from django.contrib.auth.mixins import LoginRequiredMixin
-import json
 from django.utils.dateformat import DateFormat
 from django.utils.formats import get_format
 # Create your views here.
@@ -337,3 +336,17 @@ class DeleteSkillView(LoginRequiredMixin, View):
         skill = get_object_or_404(Skill, pk=pk, user=request.user)
         skill.delete()
         return redirect("home")
+    
+class EditProfileView(View):
+    def get(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        form = UserProfileForm(instance=profile)
+        return render(request, 'core/edit_profile.html', {'form': form})
+
+    def post(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('profile', request.user.id)
+        return render(request, 'core/edit_profile.html', {'form': form})

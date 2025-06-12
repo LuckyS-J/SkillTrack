@@ -1,5 +1,5 @@
 from django import forms
-from .models import StudySession, Skill
+from .models import StudySession, Skill, UserProfile
 from datetime import timedelta
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
@@ -113,3 +113,19 @@ class CustomAuthenticationForm(AuthenticationForm):
         for field in self.fields.values():
             field.widget.attrs.update(
                 {'class': 'form-control bg-dark text-light border-secondary'})
+            
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['bio', 'profile_picture']
+        widgets = {
+            'bio': forms.Textarea(attrs={
+                'rows': 4,
+                'placeholder': 'Tell us something about yourself...',
+                'class': 'form-control'
+            }),
+        }
+        labels = {
+            'bio': 'Bio',
+            'profile_picture': 'Profile Picture'
+        }

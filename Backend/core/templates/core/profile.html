@@ -1,16 +1,46 @@
 {% extends './base.html' %}
 
 {% block content %}
+<div class="container my-4">
 
-<!-- Not logged -->
-{% if not logged %}
-  <h2>Please login to continue</h2>
+  {% if not logged %}
+    <div class="alert alert-warning text-center">
+      <h4 class="mb-0">Please login to continue</h4>
+    </div>
+  {% else %}
 
-<!-- Logged -->
-{% else %}
-  <h2>Username: {{user.username}}</h2>
-  <h2>Bio: {{user_profile.bio}}</h2>
-  <h2>With us since: {{user_profile.created_at|date:"Y-m-d"}}</h2>
-{% endif %}
+    <div class="card bg-dark text-light shadow-lg rounded-4 p-4">
+      <div class="row align-items-center">
+        
+        <!-- Kolumna z profile picture (1/5 szerokości) -->
+        <div class="col-md-2 text-center">
+          {% if user_profile.profile_picture %}
+            <img src="{{ user_profile.profile_picture.url }}" alt="{{ user.username }}"
+                 class="rounded-circle border border-secondary mb-3" width="180" height="180">
+          {% else %}
+            <img src="{{ MEDIA_URL }}default_avatar.png" alt="{{ user.username }}"
+                 class="rounded-circle border border-secondary mb-3" width="180" height="180">
+          {% endif %}
+        </div>
 
+        <!-- Kolumna z informacjami (4/5 szerokości) -->
+        <div class="col-md-10">
+          <h2 class="mb-4 border-bottom pb-2">👤 Profile Overview</h2>
+
+          <p><strong>Username:</strong> {{ user.username }}</p>
+          <p><strong>Bio:</strong> {{ user_profile.bio|default:"No bio provided." }}</p>
+          <p><strong>With us since:</strong> {{ user_profile.created_at|date:"Y-m-d" }}</p>
+
+          <div class="d-flex justify-content-between mt-4">
+            <a href="{% url 'home' %}" class="btn btn-outline-light">🔙 Back</a>
+            <a href="{% url 'edit-profile' %}" class="btn btn-outline-info">✏️ Edit Profile</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  {% endif %}
+
+</div>
 {% endblock %}
