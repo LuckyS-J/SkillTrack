@@ -1,36 +1,41 @@
 {% extends './base.html' %}
 
 {% block content %}
+<div class="container mt-5">
 
-<!-- Not logged -->
-{% if not logged %}
-  <h2>Please login to continue</h2>
-  <a href="{% url 'login' %}">Login</a>
+  {% if not logged %}
+  <div class="text-center">
+    <h2 class="text-light">🔒 Please log in to view your skills</h2>
+    <a href="{% url 'login' %}" class="btn btn-primary mt-3">Login</a>
+  </div>
+  {% else %}
+  <h2 class="text-light mb-4">🎯 Hello {{ user.username }} — you have {{ count }} skill{{ count|pluralize }}!</h2>
 
-<!-- Logged -->
-{% else %}
-  <h1>Hello {{ user.username }}!</h1>
-  <br>
-  <h2>Total skills: {{count}}</h2>
-  <br>
-
-  {% for skill in skills %}
-    <h3>Skill id: {{skill.id}}</h3>
-    <h4>name: {{skill.name}}</h4>
-    <h4>Duration: {{skill.category}}</h4>
-    <h4>Notes: {{skill.description}}</h4>
-    <a href="{% url 'edit-skill' skill.id %}">Edit skill</a>
-    <form action="{% url 'delete-skill' skill.id %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" onclick="return confirm('Are you sure you want to delete this skill?');">
-            Delete Skill
-        </button>
-    </form>
-    
-    <br>
-
-  {% endfor %}
-
-{% endif %}
-
+  <div class="row g-4">
+    {% for skill in skills %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card bg-dark text-light h-100 border-secondary shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">🧠 {{ skill.name }}</h5>
+          <p class="card-text"><strong>Category:</strong> {{ skill.category }}</p>
+          {% if skill.description %}
+          <p class="card-text"><strong>Notes:</strong> {{ skill.description }}</p>
+          {% else %}
+          <p class="card-text text-muted fst-italic">No description</p>
+          {% endif %}
+          <div class="d-flex justify-content-between">
+            <a href="{% url 'edit-skill' skill.id %}" class="btn btn-outline-info btn-sm">✏️ Edit</a>
+            <form action="{% url 'delete-skill' skill.id %}" method="post"
+              onsubmit="return confirm('Delete this skill?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger btn-sm">🗑️ Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

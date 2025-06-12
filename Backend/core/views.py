@@ -6,11 +6,10 @@ from .serializers import SkillSerializer, StudySessionSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from django.views import View
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
-from .forms import StudySessionForm, SkillForm
+from .forms import StudySessionForm, SkillForm, CustomAuthenticationForm, CustomUserCreationForm
 from django.db.models import Avg, Sum, Count
 from django.contrib.auth.mixins import LoginRequiredMixin
 # Create your views here.
@@ -128,13 +127,13 @@ class HomeView(View):
 
 
 class RegisterView(CreateView):
-    form_class = UserCreationForm
+    form_class = CustomUserCreationForm
     success_url = reverse_lazy("login")
     template_name = "core/register.html"
 
 
 class CustomLoginView(LoginView):
-    form_class = AuthenticationForm
+    form_class = CustomAuthenticationForm
     template_name = "core/login.html"
     redirect_authenticated_user = True
     success_url = reverse_lazy("home")

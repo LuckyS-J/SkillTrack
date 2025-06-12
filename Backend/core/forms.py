@@ -1,6 +1,8 @@
 from django import forms
 from .models import StudySession, Skill
 from datetime import timedelta
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
 
 
 class StudySessionForm(forms.ModelForm):
@@ -11,6 +13,9 @@ class StudySessionForm(forms.ModelForm):
 
         if user is not None:
             self.fields["skill"].queryset = Skill.objects.filter(user=user)
+        for field in self.fields.values():
+            field.widget.attrs.update(
+                {'class': 'form-control bg-dark text-light border-secondary'})
 
     DURATION_CHOICES = [
         (timedelta(minutes=15), "15 minutes"),
@@ -38,9 +43,19 @@ class StudySessionForm(forms.ModelForm):
     class Meta:
         model = StudySession
         fields = ["skill", "date", "duration", "notes"]
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
 
 
 class SkillForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            field.widget.attrs.update(
+                {'class': 'form-control bg-dark text-light border-secondary'})
 
     CATEGORY_CHOICES = [
         ("cognitive", "Cognitive Skills"),
@@ -75,3 +90,26 @@ class SkillForm(forms.ModelForm):
     class Meta:
         model = Skill
         fields = ["name", "description", "category"]
+        widgets = {
+            "description": forms.Textarea(attrs={'rows': 3}),
+        }
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ["username", "email", "password1", "password2"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update(
+                {'class': 'form-control bg-dark text-light border-secondary'})
+
+
+class CustomAuthenticationForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update(
+                {'class': 'form-control bg-dark text-light border-secondary'})

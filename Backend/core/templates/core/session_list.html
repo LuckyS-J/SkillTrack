@@ -1,35 +1,46 @@
 {% extends './base.html' %}
 
 {% block content %}
+<div class="container mt-5">
 
-<!-- Not logged -->
-{% if not logged %}
-  <h2>Please login to continue</h2>
-  <a href="{% url 'login' %}">Login</a>
+  {% if not logged %}
+  <div class="text-center">
+    <h2 class="mb-4">Please login to continue</h2>
+    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+  </div>
 
-<!-- Logged -->
-{% else %}
-  <h1>Hello {{ user.username }}!</h1>
-  <br>
-  <h2>Total sessions: {{count}}</h2>
-  <br>
+  {% else %}
+  <div class="mb-5 text-center">
+    <h1 class="fw-bold mb-3">Hello {{ user.username }}!</h1>
+    <h4 class="text-secondary">You have <span class="text-info">{{ count }}</span> sessions saved.</h4>
+  </div>
 
-  {% for session in sessions %}
-    <h3>Session id: {{session.id}}</h3>
-    <h4>Date: {{session.date}}</h4>
-    <h4>Duration: {{session.duration}}</h4>
-    <h4>Notes: {{session.notes}}</h4>
-    <a href="{% url 'edit-session' session.id %}">Edit session</a>
-    <form action="{% url 'delete-session' session.id %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" onclick="return confirm('Are you sure you want to delete this session?');">
-            Delete Session
-        </button>
-    </form>
-    <br>
-
-  {% endfor %}
-
-{% endif %}
-
+  <div class="row g-4">
+    {% for session in sessions %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 bg-dark text-light border border-secondary shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-info">Session #{{ forloop.counter }}</h5>
+          <p class="card-text"><strong>Date:</strong> {{ session.date }}</p>
+          <p class="card-text"><strong>Duration:</strong> {{ session.duration }}</p>
+          {% if session.notes %}
+          <p class="card-text"><strong>Notes:</strong> {{ session.notes|linebreaksbr }}</p>
+          {% else %}
+          <p class="card-text fst-italic">No notes</p>
+          {% endif %}
+        </div>
+        <div class="card-footer d-flex justify-content-between bg-transparent border-top border-secondary">
+          <a href="{% url 'edit-session' session.id %}" class="btn btn-outline-info btn-sm">✏️ Edit</a>
+          <form action="{% url 'delete-session' session.id %}" method="post"
+            onsubmit="return confirm('Are you sure you want to delete this session?');">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger btn-sm">🗑️ Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
 {% endblock %}
