@@ -12,6 +12,9 @@ from django.views.generic import CreateView
 from .forms import StudySessionForm, SkillForm, CustomAuthenticationForm, CustomUserCreationForm
 from django.db.models import Avg, Sum, Count
 from django.contrib.auth.mixins import LoginRequiredMixin
+import json
+from django.utils.dateformat import DateFormat
+from django.utils.formats import get_format
 # Create your views here.
 
 
@@ -209,19 +212,43 @@ class DashboardView(LoginRequiredMixin, View):
             total_sessions = sessions.count()
             total_duration = sessions.aggregate(
                 Sum("duration"))["duration__sum"]
-            average_duration = sessions.aggregate(
-                Avg("duration"))["duration__avg"]
-            top_categories = (StudySession.objects.filter(user=request.user).values(
-                'skill__category').annotate(total=Count('id')).order_by('-total')[:3])
+            
+            avg_duration = sessions.aggregate(Avg("duration"))["duration__avg"]
+            if avg_duration:
+                average_duration = avg_duration.total_seconds() / 60
+            else:
+                average_duration = 0
+
             last_session = (StudySession.objects.filter(
                 user=request.user).order_by('-date')).first()
+
+            # Charts
+            top_categories_qs = sessions.values('skill__category').annotate(total=Count('id')).order_by('-total')[:3]
+            top_categories_labels = [c['skill__category'] or 'Uncategorized' for c in top_categories_qs]
+            top_categories_data = [c['total'] for c in top_categories_qs]
+
+            daily_sessions_qs = sessions.values('date').annotate(total=Sum('duration')).order_by('date')
+            daily_labels = [DateFormat(item['date']).format(
+                'Y-m-d') for item in daily_sessions_qs]
+            daily_data = [
+                round(item['total'].total_seconds() /
+                      60, 1) if item['total'] else 0
+                for item in daily_sessions_qs
+            ]
 
             return render(request, "core/dashboard.html", context={
                 "is_session": True,
                 "total_sessions": total_sessions,
                 "total_hours": total_duration,
                 "average_session_duration": average_duration,
-                "top_categories": top_categories,
+                "top_categories": {
+                    "labels": top_categories_labels,
+                    "data": top_categories_data,
+                },
+                "daily_study": {
+                    "labels": daily_labels,
+                    "data": daily_data,
+                },
                 "last_session": last_session,
             })
 

@@ -1,23 +1,135 @@
 {% extends './base.html' %}
 
 {% block content %}
-
-{% if not is_session %}
-  <h1>Please add session to see statistics!</h1>
+<div class="container my-5">
+  {% if not is_session %}
+  <div class="alert alert-warning text-center">
+    <h4>Please add a study session to see statistics!</h4>
+  </div>
   {% else %}
-  <h2>Total sessions: {{total_sessions}}</h2>
-  <h2>Total hours: {{total_hours}}</h2>
-  <h2>Average session_duration: {{average_session_duration}}</h2>
-  <h2>Top 3 Categories</h2>
-  <ul>
-    {% for cat in top_categories %}
-    <li>{{ cat.skill__category }} ({{ cat.total }} sessions)</li>
-    {% empty %}
-    <li>No data</li>
-    {% endfor %}
-  </ul>
-  <h2>Last session: {{last_session}}</h2>
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-bg-dark shadow">
+        <div class="card-body">
+          <h5 class="card-title">📚 Total Sessions</h5>
+          <p class="card-text display-6">{{ total_sessions }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-bg-dark shadow">
+        <div class="card-body">
+          <h5 class="card-title">⏱️ Total Hours</h5>
+          <p class="card-text display-6">{{ total_hours }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-bg-dark shadow">
+        <div class="card-body">
+          <h5 class="card-title">📊 Avg. Duration</h5>
+          <p class="card-text display-6">{{ average_session_duration }} min</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-{% endif %}
+  <h4 class="text-light mb-3">📈 Top 3 Skill Categories</h4>
+  <canvas id="categoryChart" height="100"></canvas>
 
+  <h4 class="text-light mt-5 mb-3">🗓️ Study Activity Over Time</h4>
+  <canvas id="dailyChart" height="100"></canvas>
+
+  <div class="mt-5 text-light">
+    <h5>🕓 Last Session:</h5>
+    <p>{{ last_session }}</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  {{ top_categories|json_script:"top-categories-data" }}
+  {{ daily_study|json_script:"daily-study-data" }}
+
+  <script>
+    const categoryChartData = JSON.parse(document.getElementById("top-categories-data").textContent);
+    const dailyChartData = JSON.parse(document.getElementById("daily-study-data").textContent);
+
+    const categoryColors = ['#0d6efd', '#ffc107', '#198754']; // niebieski, żółty, zielony
+
+    const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+    new Chart(categoryCtx, {
+      type: 'bar',
+      data: {
+        labels: categoryChartData.labels,
+        datasets: [{
+          label: 'Sessions',
+          data: categoryChartData.data,
+          backgroundColor: categoryColors,
+          borderColor: categoryColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            bodyColor: '#fff',
+            backgroundColor: '#333'
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#e4e4e4' },
+            grid: { color: '#333' }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#e4e4e4' },
+            grid: { color: '#333' }
+          }
+        }
+      }
+    });
+
+    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+    new Chart(dailyCtx, {
+      type: 'line',
+      data: {
+        labels: dailyChartData.labels,
+        datasets: [{
+          label: 'Minutes Studied',
+          data: dailyChartData.data,
+          fill: true,
+          tension: 0.3,
+          backgroundColor: 'rgba(25, 135, 84, 0.2)',
+          borderColor: 'rgba(25, 135, 84, 1)',
+          pointBackgroundColor: 'white',
+          pointBorderColor: 'green'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            bodyColor: '#fff',
+            backgroundColor: '#333'
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#e4e4e4' },
+            grid: { color: '#333' }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#e4e4e4' },
+            grid: { color: '#333' }
+          }
+        }
+      }
+    });
+  </script>
+  {% endif %}
+</div>
 {% endblock %}
