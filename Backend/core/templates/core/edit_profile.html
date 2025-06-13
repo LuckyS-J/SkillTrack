@@ -35,6 +35,15 @@
           <span id="file-name" class="ms-2 text-primary"></span>
         </div>
 
+        {% if form.instance.profile_picture %}
+          <div class="form-check ms-1 mb-3">
+            <input class="form-check-input" type="checkbox" name="remove_picture" id="remove_picture">
+            <label class="form-check-label text-warning" for="remove_picture">
+              🗑️ Remove current picture
+            </label>
+          </div>
+        {% endif %}
+
         <!-- Buttons -->
         <div class="d-flex justify-content-between">
           <a href="{% url 'profile' user.id %}" class="btn btn-outline-light">← Back</a>

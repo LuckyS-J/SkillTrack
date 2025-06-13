@@ -55,7 +55,7 @@
     const categoryChartData = JSON.parse(document.getElementById("top-categories-data").textContent);
     const dailyChartData = JSON.parse(document.getElementById("daily-study-data").textContent);
 
-    const categoryColors = ['#0d6efd', '#ffc107', '#198754']; // niebieski, żółty, zielony
+    const categoryColors = ['#0d6efd', '#ffc107', '#198754'];
 
     const categoryCtx = document.getElementById('categoryChart').getContext('2d');
     new Chart(categoryCtx, {

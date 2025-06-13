@@ -30,6 +30,7 @@
         <div class="card-body">
           <h5 class="card-title text-info">Session #{{ forloop.counter }}</h5>
           <p class="card-text"><strong>Date:</strong> {{ session.date }}</p>
+          <p class="card-text"><strong>Skill:</strong> {{ session.skill.name }}</p>
           <p class="card-text"><strong>Duration:</strong> {{ session.duration }}</p>
           {% if session.notes %}
           <p class="card-text"><strong>Notes:</strong> {{ session.notes|linebreaksbr }}</p>

@@ -152,7 +152,7 @@ class ProfileView(LoginRequiredMixin, View):
                 "logged": False,
             })
         else:
-            user_profile = get_object_or_404(UserProfile, user__id=user_id)
+            user_profile, _ = UserProfile.objects.get_or_create(user_id=user_id)
             return render(request, "core/profile.html", context={
                 "logged": True,
                 "user": request.user,
@@ -347,6 +347,9 @@ class EditProfileView(View):
         profile, _ = UserProfile.objects.get_or_create(user=request.user)
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
+            if request.POST.get("remove_picture") and profile.profile_picture:
+                profile.profile_picture.delete(save=False)
+                profile.profile_picture = None
             form.save()
-            return redirect('profile', request.user.id)
+            return redirect('profile', user_id=request.user.id)
         return render(request, 'core/edit_profile.html', {'form': form})
