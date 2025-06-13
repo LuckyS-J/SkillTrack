@@ -13,7 +13,6 @@ from .forms import StudySessionForm, SkillForm, CustomAuthenticationForm, Custom
 from django.db.models import Avg, Sum, Count
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateformat import DateFormat
-from django.utils.formats import get_format
 # Create your views here.
 
 
